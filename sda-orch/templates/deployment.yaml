@@ -9,6 +9,8 @@ metadata:
     component: {{ .Release.Name }}-orchestrate
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{ .Values.global.networkPolicy.brokerNamespace }}: allowtraffic
+    {{ .Values.global.networkPolicy.databaseNamespace }}: allowtraffic
 spec:
   replicas: 1
   revisionHistoryLimit: {{ default "3" .Values.revisionHistory }}

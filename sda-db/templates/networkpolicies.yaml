@@ -47,6 +47,14 @@ spec:
       namespaceSelector:
         matchLabels:
           networkpolicy: {{ .Values.networkPolicy.nsprefix }}sda-internal
+  {{- if .Values.networkPolicy.testEnv }}
+    - podSelector:
+        matchLabels:
+          {{ .Values.networkPolicy.nsprefix }}db: allowtraffic
+      namespaceSelector:
+        matchLabels:
+          networkpolicy: {{ .Values.networkPolicy.nsprefix }}sda-orch
+  {{- end }}
     ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
