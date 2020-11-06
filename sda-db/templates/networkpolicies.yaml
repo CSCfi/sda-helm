@@ -41,10 +41,6 @@ spec:
   - Ingress
   ingress:
   - from:
-  {{- if .Values.networkPolicy.twoClusterSetup }}
-    - ipBlock:
-        cidr: {{ .Values.networkPolicy.externalClusterIp }}
-  {{- else }}
     - podSelector:
         matchLabels:
           {{ .Values.networkPolicy.nsprefix }}db: allowtraffic
