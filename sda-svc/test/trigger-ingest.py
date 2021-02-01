@@ -20,15 +20,19 @@ parser.add_argument('--connection', help="of the form 'amqp://<user>:<password>@
 parser.add_argument('--latest_message', action='store_true')
 parser.add_argument('user')
 parser.add_argument('filepath')
+parser.add_argument('routing_key')
 args = parser.parse_args()
 
-exchange = os.getenv('MQ_EXCHANGE','localega')
+exchange = os.getenv('MQ_EXCHANGE','sda')
+mq_vhost = os.getenv('MQ_VHOST', '/').lstrip("/")
+
+pki_path = os.getenv('PKI_PATH' '/certs')
 
 env_connection = "amqps://%s:%s@%s/%s" % (
     os.getenv('MQ_USER', 'user'),
     os.getenv('MQ_PASSWORD', 'password'),
     os.getenv('MQ_HOST', 'mq'),
-    urllib.parse.quote(os.getenv('MQ_VHOST', '/'), safe=''))
+    urllib.parse.quote(mq_vhost, safe=''))
 
 
 # MQ Connection
@@ -41,16 +45,16 @@ if mq_connection.startswith('amqps'):
 
     context.check_hostname = False
 
-    cacertfile = Path('/certs/ca.crt')
-    certfile = Path('/certs/tester.ca.crt')
-    keyfile = Path('/certs/tester.ca.key')
+    cacertfile = Path('%s/ca.crt' % pki_path)
+    certfile = Path('%s/tester.ca.crt' % pki_path)
+    keyfile = Path('%s/tester.ca.key' % pki_path)
 
     context.verify_mode = ssl.CERT_NONE
     # Require server verification
     if cacertfile.exists():
         context.verify_mode = ssl.CERT_REQUIRED
         context.load_verify_locations(cafile=str(cacertfile))
-        
+
     # If client verification is required
     if certfile.exists():
         assert( keyfile.exists() )
@@ -71,7 +75,7 @@ message = """
 """ % (args.user, args.filepath)
 
 channel.basic_publish(exchange=exchange,
-                      routing_key= 'files',
+                      routing_key=args.routing_key,
                       body=message,
                       properties=pika.BasicProperties(correlation_id="1",
                                                       content_type='application/json',
