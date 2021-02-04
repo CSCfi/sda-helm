@@ -59,6 +59,7 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: no-oss,LocalEGA
+      {{- if .Values.global.doa.outbox.enabled }}
         - name: BROKER_HOST
           value: {{ required "A valid MQ host is required" .Values.global.broker.host | quote }}
         - name: BROKER_PORT
@@ -67,6 +68,19 @@ spec:
           value: {{ .Values.global.broker.vhost | quote }}
         - name: BROKER_VALIDATE
           value: {{ .Values.global.broker.verifyPeer | quote }}
+        {{- if not .Values.global.vaultSecrets }}
+        - name: BROKER_USERNAME
+          valueFrom:
+              secretKeyRef:
+                name: {{ template "sda.fullname" . }}-doa
+                key: mqUser
+        - name: BROKER_PASSWORD
+          valueFrom:
+              secretKeyRef:
+                name: {{ template "sda.fullname" . }}-doa
+                key: mqPassword
+        {{- end }}
+      {{- end }}
         - name: DB_INSTANCE
           value: {{ required "A valid database host is required" .Values.global.db.host | quote}}
         - name: POSTGRES_DB
@@ -117,10 +131,8 @@ spec:
         - name: PASSPORT_PUBLIC_KEY_PATH
           value: "{{ include "secretsPath" . }}/{{ .Values.global.elixir.pubKey }}"
       {{- end }}
-      {{- if not .Values.global.vaultSecrets }}
         - name: KEYSTORE_PATH
           value: {{ ternary "/etc/ssl/certs/java/doa.p12" (printf "%s/doa.p12" .Values.global.secretsPath ) (empty .Values.global.pkiService) }}
-      {{- end }}
         - name: KEYSTORE_PASSWORD
           value: {{ .Values.doa.keystorePass | quote }}
         - name: ROOT_CERT_PATH
@@ -137,9 +149,9 @@ spec:
           value: {{ include "openid.endpoint" . }}
         - name: USERINFO_ENDPOINT_URL
           value: {{ include "openid.userinfo" . }}
-      {{- if .Values.global.doa.outbox.enabled }}
         - name: OUTBOX_ENABLED
-          value: {{ .Values.doa.outbox.enabled }}
+          value: {{ .Values.global.doa.outbox.enabled | quote }}
+      {{- if .Values.global.doa.outbox.enabled }}
         - name: OUTBOX_QUEUE
           value: {{ .Values.global.doa.outbox.queue | quote }}
         - name: OUTBOX_TYPE
@@ -180,8 +192,6 @@ spec:
       {{- end }}
         - name: LOG_PATH
           value: "/logs"
-        - name: OUTBOX_ENABLED
-          value: "false"
         ports:
         - name: doa
           containerPort: 8080
