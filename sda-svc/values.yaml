@@ -176,6 +176,8 @@ global:
     name: "lega"
     passIngest: ""
     passOutgest: ""
+    userIngest: "lega_in"
+    userOutgest: "lega_out"
     port: 5432
     # to be used with networkpolicies
     servicePort: 5432
