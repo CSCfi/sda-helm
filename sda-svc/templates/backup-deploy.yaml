@@ -71,6 +71,8 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
         env:
+        - name: GODEBUG
+          value: "x509ignoreCN=0"
         - name: ARCHIVE_TYPE
   {{- if eq "s3" .Values.global.archive.storageType }}
           value: "s3"
