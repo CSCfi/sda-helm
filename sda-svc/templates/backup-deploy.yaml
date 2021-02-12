@@ -49,7 +49,7 @@ spec:
   {{- if .Values.global.pkiPermissions }}
       initContainers:
       - name: tls-init
-        image: busybox
+        image: "{{ include "image.registry" . }}busybox"
         command: ["/bin/sh", "-c"]
         args: ["/bin/cp /tls-certs/* /tls/ && chown 65534:65534 /tls/* && chmod 0600 /tls/*"]
         securityContext:
@@ -64,8 +64,8 @@ spec:
           mountPath: /tls
   {{- end }}
       containers:
-      - name: s3-backup
-        image: "{{ .Values.backup.repository }}:{{ .Values.backup.imageTag }}"
+      - name: backup
+        image: "{{ include "image.registry" . }}{{ .Values.backup.repository }}:{{ .Values.backup.imageTag }}"
         imagePullPolicy: {{ .Values.backup.imagePullPolicy | quote }}
         command: ["sda-sync"]
         securityContext:
