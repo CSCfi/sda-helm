@@ -151,7 +151,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserBackup" -}}
-{{- ternary "lega_in" .Values.credentials.backup.dbUser (empty .Values.credentials.backup.dbUser) -}}
+{{- ternary .Values.global.db.userIngest .Values.credentials.backup.dbUser (empty .Values.credentials.backup.dbUser) -}}
 {{- end -}}
 {{- define "dbPassBackup" -}}
 {{- ternary .Values.global.db.passIngest .Values.credentials.backup.dbPassword (empty .Values.credentials.backup.dbPassword) -}}
@@ -165,7 +165,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserDoa" -}}
-{{- ternary "lega_out" .Values.credentials.doa.dbUser (empty .Values.credentials.doa.dbUser) -}}
+{{- ternary .Values.global.db.userOutgest .Values.credentials.doa.dbUser (empty .Values.credentials.doa.dbUser) -}}
 {{- end -}}
 {{- define "dbPassDoa" -}}
 {{- ternary .Values.global.db.passOutgest .Values.credentials.doa.dbPassword (empty .Values.credentials.doa.dbPassword) -}}
@@ -179,7 +179,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserFinalize" -}}
-{{- ternary "lega_in" .Values.credentials.finalize.dbUser (empty .Values.credentials.finalize.dbUser) -}}
+{{- ternary .Values.global.db.userIngest .Values.credentials.finalize.dbUser (empty .Values.credentials.finalize.dbUser) -}}
 {{- end -}}
 {{- define "dbPassFinalize" -}}
 {{- ternary .Values.global.db.passIngest .Values.credentials.finalize.dbPassword (empty .Values.credentials.finalize.dbPassword) -}}
@@ -193,7 +193,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserIngest" -}}
-{{- ternary "lega_in" .Values.credentials.ingest.dbUser (empty .Values.credentials.ingest.dbUser) -}}
+{{- ternary .Values.global.db.userIngest .Values.credentials.ingest.dbUser (empty .Values.credentials.ingest.dbUser) -}}
 {{- end -}}
 {{- define "dbPassIngest" -}}
 {{- ternary .Values.global.db.passIngest .Values.credentials.ingest.dbPassword (empty .Values.credentials.ingest.dbPassword) -}}
@@ -223,7 +223,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserMapper" -}}
-{{- ternary "lega_out" .Values.credentials.mapper.dbUser (empty .Values.credentials.mapper.dbUser) -}}
+{{- ternary .Values.global.db.userOutgest .Values.credentials.mapper.dbUser (empty .Values.credentials.mapper.dbUser) -}}
 {{- end -}}
 {{- define "dbPassMapper" -}}
 {{- ternary .Values.global.db.passOutgest .Values.credentials.mapper.dbPassword (empty .Values.credentials.mapper.dbPassword) -}}
@@ -238,7 +238,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserReleaseTest" -}}
-{{- ternary "lega_in" .Values.credentials.releasetest.dbUser (empty .Values.credentials.releasetest.dbUser) -}}
+{{- ternary .Values.global.db.userIngest .Values.credentials.releasetest.dbUser (empty .Values.credentials.releasetest.dbUser) -}}
 {{- end -}}
 {{- define "dbPassReleaseTest" -}}
 {{- ternary .Values.global.db.passIngest .Values.credentials.releasetest.dbPassword (empty .Values.credentials.releasetest.dbPassword) -}}
@@ -254,7 +254,7 @@ Create chart name and version as used by the chart label.
 
 {{/**/}}
 {{- define "dbUserVerify" -}}
-{{- ternary "lega_in" .Values.credentials.verify.dbUser (empty .Values.credentials.verify.dbUser) -}}
+{{- ternary .Values.global.db.userIngest .Values.credentials.verify.dbUser (empty .Values.credentials.verify.dbUser) -}}
 {{- end -}}
 {{- define "dbPassVerify" -}}
 {{- ternary .Values.global.db.passIngest .Values.credentials.verify.dbPassword (empty .Values.credentials.verify.dbPassword) -}}
