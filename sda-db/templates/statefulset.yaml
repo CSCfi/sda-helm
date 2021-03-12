@@ -58,8 +58,34 @@ spec:
           mountPath: /psql
         {{- end }}
     {{- end }}
+    {{- if .Values.vault }}
+      - name: tls-certs
+        image: "{{ include "image.registry" . }}busybox"
+        command:
+          - /bin/sh
+          - -cx
+          - |
+            cp /vault/secrets/* /tls-certs/
+            chmod  600 /tls-certs/*
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        {{- if and  .Values.persistence.volumePermissions .Values.persistence.enabled }}
+        - name: tls-certs
+          mountPath: /tls-certs
+        {{- end }}
+    {{- end }}
       containers:
       - name: postgresql
+    {{- if .Values.vault }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            source /vault/secrets/in.pw
+            source /vault/secrets/out.pw
+            /usr/local/bin/entrypoint.sh
+    {{- end }}
         image: "{{ include "image.registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         securityContext:
@@ -70,6 +96,7 @@ spec:
         resources:
 {{ toYaml .Values.resources | trim | indent 10 }}
         env:
+        {{- if not .Values.vault }}
         - name: DB_LEGA_IN_PASSWORD
           valueFrom:
               secretKeyRef:
@@ -80,6 +107,7 @@ spec:
               secretKeyRef:
                 name: {{ template "sda.fullname" . }}
                 key: pgOutPasswd
+        {{- end }}
         - name: PG_SERVER_CERT
           value: {{ .Values.persistence.mountPath }}/tls/pg.crt
         - name: PG_SERVER_KEY
@@ -128,6 +156,9 @@ spec:
       volumes:
     {{- if not .Values.externalPkiService.tlsPath }}
       - name: tls-certs
+      {{- if .Values.vault }}
+        emptyDir: {}
+      {{- else }}
         projected:
           defaultMode: 0440
           sources:
@@ -142,6 +173,7 @@ spec:
                 path: pg.crt
               - key: pg.key
                 path: pg.key
+      {{- end }}
     {{- end }}
       - name: data
   {{- if .Values.persistence.enabled }}
